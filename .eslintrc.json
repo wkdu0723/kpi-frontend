@@ -1,3 +1,24 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "next",
+    "prettier"
+  ],
+  "plugins": [
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "semi": "error",
+    "quotes": [
+      "warn",
+      "double"
+    ],
+    "no-tabs": "off",
+    "indent": "off"
+  }
 }
