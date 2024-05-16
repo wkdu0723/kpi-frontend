@@ -11,9 +11,11 @@ import {
   ListSubheader,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import style from "./style.module.scss";
 
-export const UserData = (): JSX.Element => {
+export const SideMenu = (): JSX.Element => {
   const [issues, setIssues] = useState<JiraMainData[]>([]);
+  const [displayMenu, setDisplayMenu] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUserAllIssue = async () => {
@@ -26,21 +28,29 @@ export const UserData = (): JSX.Element => {
 
   return (
     <List
-      sx={{ width: "100%", maxWidth: 360 }}
+      className={style.SideMenu}
+      sx={{ width: "100%", maxWidth: 260 }}
       subheader={
         <ListSubheader>
           <span>투네이션 KPI</span>
+          <img
+            src={`/images/menu-open.svg`}
+            onClick={() => setDisplayMenu(!displayMenu)}
+            alt="menu icon"
+          />
         </ListSubheader>
       }
     >
-      <ListItemButton>
-        <ListItemIcon></ListItemIcon>
-        <ListItemText primary="Dashboard" />
-      </ListItemButton>
-      <ListItemButton>
-        <ListItemIcon></ListItemIcon>
-        <ListItemText primary="User" />
-      </ListItemButton>
+      <article data-display={displayMenu}>
+        <ListItemButton>
+          <ListItemIcon></ListItemIcon>
+          <ListItemText primary="Dashboard" />
+        </ListItemButton>
+        <ListItemButton>
+          <ListItemIcon></ListItemIcon>
+          <ListItemText primary="User" />
+        </ListItemButton>
+      </article>
     </List>
   );
 };
