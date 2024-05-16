@@ -22,6 +22,10 @@
     font-weight: 400;
 }
 
+.MuiListSubheader-root {
+    font-family: NanumSquare, sans-serif;
+}
+
 body {
     padding: 0;
     margin: 0;

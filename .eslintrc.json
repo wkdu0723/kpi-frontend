@@ -1,11 +1,10 @@
 {
-  "extends": [
-    "next",
-    "prettier"
-  ],
-  "plugins": [
-    "prettier"
-  ],
+  "root": true,
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "plugins": ["typescript"],
   "parserOptions": {
     "ecmaVersion": 2020,
     "ecmaFeatures": {
@@ -14,11 +13,9 @@
   },
   "rules": {
     "semi": "error",
-    "quotes": [
-      "warn",
-      "double"
-    ],
+    "quotes": ["warn", "double"],
     "no-tabs": "off",
     "indent": "off"
-  }
+  },
+  "ignorePatterns": ["node_modules/"]
 }

@@ -1,7 +1,3 @@
 export default function DashBoard() {
-  return (
-    <main>
-      testsetsetst
-    </main>
-  );
+  return <main>testsetsetst</main>;
 }
