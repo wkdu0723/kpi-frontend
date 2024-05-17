@@ -16,3 +16,12 @@ export interface JiraMainData {
   parent_id?: string;
   parent_key?: string;
 }
+
+// /** 지라 검색할때 사용하는 셀렉트 태그값입니다. */
+// export enum SelectTag {
+//   accountID = "assignee",
+//   Name = "",
+//   IssueName = 3,
+//   ProjectName = 4,
+//   StatusName = 5,
+// }
