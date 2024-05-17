@@ -1,33 +1,38 @@
 @font-face {
-    font-family: "NanumSquare";
-    src: url("../../public/fonts/NanumSquareB.otf") format("opentype");
-    font-weight: 700;
+  font-family: "NanumSquare";
+  src: url("../../public/fonts/NanumSquareB.otf") format("opentype");
+  font-weight: 700;
 }
 
 @font-face {
-    font-family: "NanumSquare";
-    src: url("../../public/fonts/NanumSquareEB.otf") format("opentype");
-    font-weight: 800;
+  font-family: "NanumSquare";
+  src: url("../../public/fonts/NanumSquareEB.otf") format("opentype");
+  font-weight: 800;
 }
 
 @font-face {
-    font-family: "NanumSquare";
-    src: url("../../public/fonts/NanumSquareL.otf") format("opentype");
-    font-weight: 300;
+  font-family: "NanumSquare";
+  src: url("../../public/fonts/NanumSquareL.otf") format("opentype");
+  font-weight: 300;
 }
 
 @font-face {
-    font-family: "NanumSquare";
-    src: url("../../public/fonts/NanumSquareR.otf") format("opentype");
-    font-weight: 400;
-}
-
-.MuiListSubheader-root {
-    font-family: NanumSquare, sans-serif;
+  font-family: "NanumSquare";
+  src: url("../../public/fonts/NanumSquareR.otf") format("opentype");
+  font-weight: 400;
 }
 
 body {
-    padding: 0;
-    margin: 0;
-    font-family: NanumSquare, sans-serif;
+  padding: 0;
+  margin: 0;
+  font-family: NanumSquare, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: initial;
+  outline: none;
+}
+a:active {
+  color: inherit;
 }

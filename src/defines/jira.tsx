@@ -25,3 +25,12 @@ export interface JiraMainData {
 //   ProjectName = 4,
 //   StatusName = 5,
 // }
+
+// const columns: readonly Column[] = [
+//   { id: "project", label: "프로젝트", minWidth: 170 },
+//   { id: "issue", label: "이슈", minWidth: 100 },
+//   { id: "account_id", label: "담당자 아이디", minWidth: 100 },
+//   { id: "account_name", label: "담당자 이름", minWidth: 100 },
+//   { id: "created", label: "생성 날짜", minWidth: 100 },
+//   { id: "status_name", label: "진행 상태", minWidth: 100 },
+// ];

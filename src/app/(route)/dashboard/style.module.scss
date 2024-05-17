@@ -1,22 +1,35 @@
 .Dashboard {
     display: flex;
     align-items: center;
-    .SearchBox {
-        position: relative;
+    flex-direction: column;
+    padding: 16px;
+    .DashboardHeader {
         display: flex;
-        width: auto;
-        height: 54px;
-        margin: 8px;
-        .SearchTextField {
-            input {
-                padding-right: 40px;
+        width: 100%;
+        height: auto;
+        margin-bottom: 8px;
+
+        .SearchBox {
+            position: relative;
+            display: flex;
+            width: auto;
+            height: 54px;
+            margin: 8px;
+            .SearchTextField {
+                input {
+                    padding-right: 40px;
+                }
+            }
+            > img {
+                position: absolute;
+                right: 12px;
+                top: 18px;
+                cursor: pointer;
             }
         }
-        > img {
-            position: absolute;
-            right: 12px;
-            top: 18px;
-            cursor: pointer;
-        }
+    }
+
+    th {
+        font-weight: bold;
     }
 }
