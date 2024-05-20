@@ -2,7 +2,7 @@
 
 import { getSearchData } from "@/api/jira";
 import { JiraMainData } from "@/defines/jira";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import {
   Box,
   FormControl,
@@ -20,6 +20,8 @@ import {
   TextField,
 } from "@mui/material";
 import style from "./style.module.scss";
+import TimeLineChart from "@/components/apex-chart/timeline-chart";
+import { ApexOptions } from "apexcharts";
 
 interface Column {
   id: string;
@@ -54,7 +56,7 @@ export const Dashboard = (): JSX.Element => {
   /** 값 사전검증 후 검색합니다. */
   const serachHandler = async () => {
     const resp = await getSearchData(tag, keyword);
-    console.log("??? resp :", resp);
+    console.log("??? resp:", resp);
     setIssues(resp);
   };
 
@@ -80,8 +82,60 @@ export const Dashboard = (): JSX.Element => {
     return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
+  useLayoutEffect(() => {
+    serachHandler();
+  }, []);
+
+  const series = [
+    {
+      name: "Project 1",
+      data: [
+        {
+          x: "Phase 1",
+          y: [new Date("2024-05-01").getTime(), new Date("2024-05-10").getTime()],
+        },
+        {
+          x: "Phase 2",
+          y: [new Date("2024-05-11").getTime(), new Date("2024-05-20").getTime()],
+        },
+      ],
+    },
+    {
+      name: "Project 2",
+      data: [
+        {
+          x: "Phase 1",
+          y: [new Date("2024-05-05").getTime(), new Date("2024-05-15").getTime()],
+        },
+        {
+          x: "Phase 2",
+          y: [new Date("2024-05-16").getTime(), new Date("2024-05-25").getTime()],
+        },
+      ],
+    },
+  ];
+
+  const options: ApexOptions = {
+    chart: {
+      type: "rangeBar",
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+      },
+    },
+    xaxis: {
+      type: "datetime",
+    },
+    title: {
+      text: "Timeline Chart",
+      align: "center",
+    },
+  };
+
   return (
     <section className={style.Dashboard}>
+      <TimeLineChart type="rangeBar" width={300} height={300} options={options} series={series} />
       <article className={style.DashboardHeader}>
         {/* 필터 */}
         <Box>
@@ -121,7 +175,6 @@ export const Dashboard = (): JSX.Element => {
           <img src="/images/icon-search.png" onClick={serachHandler} />
         </Box>
       </article>
-
       {/* 결과 테이블 */}
       <Paper sx={{ width: "100%", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 600 }}>
