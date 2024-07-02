@@ -32,4 +32,10 @@
     th {
         font-weight: bold;
     }
+
+    .CollapseImage {
+        &[data-select="true"] {
+            transform: rotate(180deg);
+        }
+    }
 }

@@ -1,3 +1,12 @@
+/** 프로젝트 작업 로그 데이터 */
+export interface workLogs {
+  issue_id: string; // 이슈 키값
+  totalTime: string; // 이슈 총 작업 시간
+  user_id: string; // 유저 키값
+  user_name: string; // 유저 이름
+}
+
+/** 프로젝트 메인 데이터 */
 export interface JiraMainData {
   id: string;
   project_key: string;
@@ -15,6 +24,9 @@ export interface JiraMainData {
   status_category_color: string;
   parent_id?: string;
   parent_key?: string;
+  start_date?: string; // Start Date
+  worklogs?: workLogs[]; // 작업로그
+  children?: JiraMainData[]; // 연결된 자식 프로젝트
 }
 
 // /** 지라 검색할때 사용하는 셀렉트 태그값입니다. */
