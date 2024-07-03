@@ -1,4 +1,4 @@
-import { JiraMainData } from "@/defines/jira";
+import { JiraMainData, MergeJiraData } from "@/defines/jira";
 
 /** 본인이 가지고 있는 모든 이슈 데이터를 가지고옵니다. */
 export const getUserAllIssues = async (accountId: string) => {
@@ -24,12 +24,12 @@ export const getSearchData = async (filter: string, keyword: string, rowsPerPage
         const resp = await fetch(`http://localhost:3000/api/issues/search?filter=${filter}&keyword=${keyword}&rowsPerPage=${rowsPerPage}`);
         if (!resp.ok) throw resp;
 
-        const data = await resp.json() as JiraMainData[];
-        
+        const data = await resp.json() as MergeJiraData;
+
         return data;
     } catch (err) {
         console.error("getUserAllIssues error:", err);
-        return [];
+        return { parents: [], children: [] };
     }
 }
 

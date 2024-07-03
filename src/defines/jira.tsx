@@ -25,24 +25,10 @@ export interface JiraMainData {
   parent_id?: string;
   parent_key?: string;
   start_date?: string; // Start Date
-  worklogs?: workLogs[]; // 작업로그
-  children?: JiraMainData[]; // 연결된 자식 프로젝트
 }
 
-// /** 지라 검색할때 사용하는 셀렉트 태그값입니다. */
-// export enum SelectTag {
-//   accountID = "assignee",
-//   Name = "",
-//   IssueName = 3,
-//   ProjectName = 4,
-//   StatusName = 5,
-// }
-
-// const columns: readonly Column[] = [
-//   { id: "project", label: "프로젝트", minWidth: 170 },
-//   { id: "issue", label: "이슈", minWidth: 100 },
-//   { id: "account_id", label: "담당자 아이디", minWidth: 100 },
-//   { id: "account_name", label: "담당자 이름", minWidth: 100 },
-//   { id: "created", label: "생성 날짜", minWidth: 100 },
-//   { id: "status_name", label: "진행 상태", minWidth: 100 },
-// ];
+/** 메인 프로젝트 리스트 검색 시 사용하는 데이터입니다. */
+export interface MergeJiraData {
+  parents: JiraMainData[];
+  children: JiraMainData[];
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { getSearchData } from "@/api/jira";
-import { JiraMainData } from "@/defines/jira";
+import { JiraMainData, MergeJiraData } from "@/defines/jira";
 import { useLayoutEffect, useState } from "react";
 import {
   Box,
@@ -33,41 +33,41 @@ interface Column {
   format?: (value: number) => string;
 }
 
-interface ChartData {
-  x: string; // 유저 이름
-  y: [number, number]; // 프로젝트 진행 기간
-}
+// interface ChartData {
+//   x: string; // 유저 이름
+//   y: [number, number]; // 프로젝트 진행 기간
+// }
 
 /**
  * 하루 근무시간 (8시간)
  * (지라에서 1d를 입력하면 8h로 기록됨)
  */
-const workDay = 28800;
+// const workDay = 28800;
 /** 밀리초 단위로 변환 */
-const millisecondsPerDay = 24 * 60 * 60 * 1000;
+// const millisecondsPerDay = 24 * 60 * 60 * 1000;
 
 /** 프로젝트 일정 차트옵션입니다. */
-const options: ApexOptions = {
-  chart: {
-    type: "rangeBar",
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-    },
-  },
-  dataLabels: { // 작업 기간을 보여주기 위한 옵션
-    enabled: true,
-    formatter: function (time: [number, number]) { // time값은 언제나 배열[0],[1]이 존재
-      const timeDifference = time[1] - time[0];
-      const daysDifference = (timeDifference / millisecondsPerDay).toFixed(1);
-      return `${daysDifference} days`;
-    }
-  },
-  xaxis: {
-    type: "datetime",
-  },
-};
+// const options: ApexOptions = {
+//   chart: {
+//     type: "rangeBar",
+//   },
+//   plotOptions: {
+//     bar: {
+//       horizontal: true,
+//     },
+//   },
+//   dataLabels: { // 작업 기간을 보여주기 위한 옵션
+//     enabled: true,
+//     formatter: function (time: [number, number]) { // time값은 언제나 배열[0],[1]이 존재
+//       const timeDifference = time[1] - time[0];
+//       const daysDifference = (timeDifference / millisecondsPerDay).toFixed(1);
+//       return `${daysDifference} days`;
+//     }
+//   },
+//   xaxis: {
+//     type: "datetime",
+//   },
+// };
 
 /** 테이블 컬럼 */
 const columns: readonly Column[] = [
@@ -90,7 +90,7 @@ const selectFilter: readonly { name: string; id: string }[] = [
 ];
 
 export const Dashboard = (): JSX.Element => {
-  const [issues, setIssues] = useState<JiraMainData[]>([]);
+  const [issues, setIssues] = useState<MergeJiraData>({ parents: [], children: [] });
   const [filter, setFilter] = useState<string>("");
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -106,34 +106,34 @@ export const Dashboard = (): JSX.Element => {
   };
 
   /** 프로젝트 데이터를 기반으로 차트 데이터를 반환합니다. */
-  const setChartData = (jiraMainData: JiraMainData) => {
-    const worklog: ChartData[] = []; // 로그 합산용
-    const createdDate = new Date(jiraMainData.created); // 시작 시간
-    const startTime = createdDate.getTime();
+  // const setChartData = (jiraMainData: JiraMainData) => {
+  //   const worklog: ChartData[] = []; // 로그 합산용
+  //   const createdDate = new Date(jiraMainData.created); // 시작 시간
+  //   const startTime = createdDate.getTime();
 
-    const seriesData: any = {
-      name: jiraMainData.project_name,
-      data: [{
-        x: "",
-        y: [startTime, startTime],
-      }],
-    }
+  //   const seriesData: any = {
+  //     name: jiraMainData.project_name,
+  //     data: [{
+  //       x: "",
+  //       y: [startTime, startTime],
+  //     }],
+  //   }
 
-    if (!jiraMainData.worklogs) return [seriesData];
+  //   if (!jiraMainData.worklogs) return [seriesData];
 
-    jiraMainData.worklogs.map((log) => {
-      const day = parseInt(log.totalTime) / workDay;
-      const endTime = new Date(startTime + day * millisecondsPerDay); // 작업 종료 시간
-      worklog.push({
-        x: log.user_name,
-        y: [startTime, endTime.getTime()],
-      });
-    });
+  //   jiraMainData.worklogs.map((log) => {
+  //     const day = parseInt(log.totalTime) / workDay;
+  //     const endTime = new Date(startTime + day * millisecondsPerDay); // 작업 종료 시간
+  //     worklog.push({
+  //       x: log.user_name,
+  //       y: [startTime, endTime.getTime()],
+  //     });
+  //   });
 
-    seriesData.data = worklog;
+  //   seriesData.data = worklog;
 
-    return [seriesData];
-  };
+  //   return [seriesData];
+  // };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -160,6 +160,48 @@ export const Dashboard = (): JSX.Element => {
   useLayoutEffect(() => {
     serachHandler();
   }, []);
+
+  /** 부모 리스트 및 자식 리스트를 그려줍니다. */
+  const renderTableItem = (item: JiraMainData, isChildren?: boolean) => {
+    return <TableRow
+      className={isChildren ? style.childrenTable : ""}
+      hover
+      role="checkbox"
+      tabIndex={-1}
+      key={`${item.id}-${item.project_key}`}
+    >
+      <TableCell>
+        {!isChildren && <IconButton
+          aria-label="expand row"
+          size="small"
+          onClick={() => {
+            setProjectId(project === item.id ? "" : item.id);
+          }}
+        >
+          <img
+            className={style.CollapseImage}
+            src={`/images/arrow-down.png`}
+            alt="down icon"
+            data-select={project === item.id}
+          />
+        </IconButton>}
+      </TableCell>
+      <TableCell>
+        {item.project_name}
+      </TableCell>
+      <TableCell>
+        {/* TODO:: 클릭 시 해당 이슈로 이동 */}
+        <a href="https://naver.com" target="_blank">
+          {item.summary}
+        </a>
+      </TableCell>
+      <TableCell>{item.assignee_account_id}</TableCell>
+      <TableCell>{item.assignee_display_name}</TableCell>
+      <TableCell>{formatDate(item.created)}</TableCell>
+      <TableCell>{item.start_date ? formatDate(item.start_date) : " - "}</TableCell>
+      <TableCell>{item.status_name}</TableCell>
+    </TableRow>;
+  }
 
   return (
     <section className={style.Dashboard}>
@@ -216,50 +258,31 @@ export const Dashboard = (): JSX.Element => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {issues.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => {
-                // const series = setChartData(item); // 디폴트값이 무조건 존재함.
+              {issues.parents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => {
+                const children = issues.children.filter((findChildren) => findChildren.parent_id === item.id);
                 return (
                   <React.Fragment key={`${item.id}-${item.project_key}`}>
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                    >
-                      <TableCell>
-                        <IconButton
-                          aria-label="expand row"
-                          size="small"
-                          onClick={() => {
-                            setProjectId(project === item.id ? "" : item.id);
-                          }}
-                        >
-                          <img
-                            className={style.CollapseImage}
-                            src={`/images/arrow-down.png`}
-                            alt="down icon"
-                            data-select={project === item.id}
-                          />
-                        </IconButton>
-                      </TableCell>
-                      <TableCell>
-                        {item.project_name}
-                      </TableCell>
-                      <TableCell>
-                        {/* TODO:: 클릭 시 해당 이슈로 이동 */}
-                        <a href="https://naver.com" target="_blank">
-                          {item.summary}
-                        </a>
-                      </TableCell>
-                      <TableCell>{item.assignee_account_id}</TableCell>
-                      <TableCell>{item.assignee_display_name}</TableCell>
-                      <TableCell>{formatDate(item.created)}</TableCell>
-                      <TableCell>{item.start_date ? formatDate(item.start_date) : " - "}</TableCell>
-                      <TableCell>{item.status_name}</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className={style.TimeLineChart} style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-                        <Collapse className={style.Collapse} in={project === item.id} timeout="auto">
-                          {/* <TimeLineChart type="rangeBar" width={300} height={300} options={options} series={series} /> */}
+                    {renderTableItem(item)}
+                    <TableRow className={style.ChildrenTableRow}>
+                      <TableCell style={{ padding: 0 }} colSpan={8}>
+                        <Collapse in={project === item.id} timeout="auto">
+                          <Box>
+                            <Table>
+                              <TableHead className={style.ChildrenTableHead}>
+                                <TableRow>
+                                  {columns.map((column) => (
+                                    <TableCell key={column.id} align={"left"} style={{ minWidth: column.minWidth }}>
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {children.map((childrenItem) => {
+                                  return renderTableItem(childrenItem, true);
+                                })}
+                              </TableBody>
+                            </Table>
+                          </Box>
                         </Collapse>
                       </TableCell>
                     </TableRow>
@@ -272,14 +295,14 @@ export const Dashboard = (): JSX.Element => {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={issues.length}
+          count={issues.parents.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-    </section>
+    </section >
   );
 };
 

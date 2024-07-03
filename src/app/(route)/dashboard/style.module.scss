@@ -38,4 +38,24 @@
             transform: rotate(180deg);
         }
     }
+    .ChildrenTableRow {
+        border: none;
+        .ChildrenTableHead {
+            > tr > th {
+                padding: 0 16px;
+            }
+        }
+    }
+
+    // .childrenTable {
+    //     > td {
+    //     }
+    //     > td:nth-child(1) {
+    //         min-width: 9px;
+    //     }
+    //     > td:nth-child(2) {
+    //         max-width: 200px;
+    //         min-width: 143px;
+    //     }
+    // }
 }
