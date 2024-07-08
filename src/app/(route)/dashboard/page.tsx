@@ -25,6 +25,7 @@ import style from "./style.module.scss";
 import TimeLineChart from "@/components/apex-chart/timeline-chart";
 import { ApexOptions } from "apexcharts";
 import React from "react";
+import { JiraUrl } from "@/libs/Consts";
 
 interface Column {
   id: string;
@@ -74,7 +75,6 @@ const columns: readonly Column[] = [
   { id: "arrow", label: "", minWidth: 20 },
   { id: "project", label: "프로젝트", minWidth: 170 },
   { id: "issue", label: "이슈", minWidth: 100 },
-  { id: "account_id", label: "담당자 아이디", minWidth: 100 },
   { id: "account_name", label: "담당자 이름", minWidth: 100 },
   { id: "created", label: "생성 날짜", minWidth: 100 },
   { id: "start_date", label: "시작 날짜", minWidth: 100 },
@@ -83,7 +83,6 @@ const columns: readonly Column[] = [
 
 /** 필터 종류입니다. */
 const selectFilter: readonly { name: string; id: string }[] = [
-  { name: "담당자 아이디", id: "assignee_account_id" },
   { name: "이슈 명", id: "assignee_display_name" },
   { name: "프로젝트 명", id: "project_name" },
   { name: "진행 상태", id: "status_name" },
@@ -162,16 +161,16 @@ export const Dashboard = (): JSX.Element => {
   }, []);
 
   /** 부모 리스트 및 자식 리스트를 그려줍니다. */
-  const renderTableItem = (item: JiraMainData, isChildren?: boolean) => {
+  const renderTableItem = (item: JiraMainData, isRenderArrow: boolean) => {
     return <TableRow
-      className={isChildren ? style.childrenTable : ""}
+      className={isRenderArrow ? style.childrenTable : ""}
       hover
       role="checkbox"
       tabIndex={-1}
       key={`${item.id}-${item.project_key}`}
     >
       <TableCell>
-        {!isChildren && <IconButton
+        {isRenderArrow && <IconButton
           aria-label="expand row"
           size="small"
           onClick={() => {
@@ -190,12 +189,10 @@ export const Dashboard = (): JSX.Element => {
         {item.project_name}
       </TableCell>
       <TableCell>
-        {/* TODO:: 클릭 시 해당 이슈로 이동 */}
-        <a href="https://naver.com" target="_blank">
+        <a href={`${JiraUrl}/jira/${item.project_type}/projects/${item.project_key}/issues/${item.issue_key}`} target="_blank">
           {item.summary}
         </a>
       </TableCell>
-      <TableCell>{item.assignee_account_id}</TableCell>
       <TableCell>{item.assignee_display_name}</TableCell>
       <TableCell>{formatDate(item.created)}</TableCell>
       <TableCell>{item.start_date ? formatDate(item.start_date) : " - "}</TableCell>
@@ -260,11 +257,15 @@ export const Dashboard = (): JSX.Element => {
             <TableBody>
               {issues.parents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => {
                 const children = issues.children.filter((findChildren) => findChildren.parent_id === item.id);
+                const isChildren = children.length > 0; // 하위 일감 존재 여부
+
                 return (
                   <React.Fragment key={`${item.id}-${item.project_key}`}>
-                    {renderTableItem(item)}
-                    <TableRow className={style.ChildrenTableRow}>
-                      <TableCell style={{ padding: 0 }} colSpan={8}>
+                    {/* 메인 일감 */}
+                    {renderTableItem(item, isChildren)}
+                    {/* 하위 일감 */}
+                    {isChildren && <TableRow className={style.ChildrenTableRow}>
+                      <TableCell style={{ padding: 0 }} colSpan={7}>
                         <Collapse in={project === item.id} timeout="auto">
                           <Box>
                             <Table>
@@ -278,14 +279,14 @@ export const Dashboard = (): JSX.Element => {
                               </TableHead>
                               <TableBody>
                                 {children.map((childrenItem) => {
-                                  return renderTableItem(childrenItem, true);
+                                  return renderTableItem(childrenItem, false);
                                 })}
                               </TableBody>
                             </Table>
                           </Box>
                         </Collapse>
                       </TableCell>
-                    </TableRow>
+                    </TableRow>}
                   </React.Fragment>
                 );
               })}

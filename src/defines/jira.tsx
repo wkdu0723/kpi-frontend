@@ -9,6 +9,7 @@ export interface workLogs {
 /** 프로젝트 메인 데이터 */
 export interface JiraMainData {
   id: string;
+  issue_key: string;
   project_key: string;
   project_name: string;
   project_type: string;
