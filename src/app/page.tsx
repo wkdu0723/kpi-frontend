@@ -68,7 +68,7 @@ export const Home = (): JSX.Element => {
    * */
   const serachHandler = async (isFetch: boolean = false) => {
     if (!filter && !isFetch) {
-      return addAlert("error", "filter를 선택해주세요");
+      return addAlert("error", "Filter를 선택해주세요");
     }
 
     const resp = await getSearchData(filter, keyword, rowsPerPage);

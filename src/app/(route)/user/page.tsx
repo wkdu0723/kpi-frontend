@@ -1,6 +1,6 @@
 "use client";
 
-import { getSearchData } from "@/api/jira";
+import { getSearchData, getSearchUserProjectData } from "@/api/jira";
 import { JiraMainData, MergeJiraData } from "@/defines/jira";
 import { useLayoutEffect, useState } from "react";
 import {
@@ -26,6 +26,7 @@ import TimeLineChart from "@/components/apex-chart/timeline-chart";
 import { ApexOptions } from "apexcharts";
 import React from "react";
 import { JiraUrl } from "@/libs/Consts";
+import { useAlert } from "@/components/alert/alertContext";
 
 interface Column {
   id: string;
@@ -96,9 +97,18 @@ export const User = (): JSX.Element => {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [project, setProjectId] = useState<string>("");
+  const { addAlert } = useAlert();
 
-  const serachHandler = async () => {
-    const resp = await getSearchData(filter, keyword, rowsPerPage);
+  /**
+   * 프로젝트를 검색합니다
+   * isFetch는 최초 세팅에서만 사용됩니다.
+   * */
+  const serachHandler = async (isFetch: boolean = false) => {
+    if (!filter && !isFetch) {
+      return addAlert("error", "Filter를 선택해주세요");
+    }
+
+    const resp = await getSearchUserProjectData(filter, keyword, rowsPerPage);
     console.log("??? resp:", resp);
     if (!resp) return;
 
@@ -238,8 +248,11 @@ export const User = (): JSX.Element => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setKeyword(event.target.value);
             }}
+            onKeyUp={(event) => {
+              if (event.code === "Enter" || event.key === "Enter") serachHandler();
+            }}
           />
-          <img src="/images/icon-search.png" onClick={serachHandler} />
+          <img src="/images/icon-search.png" onClick={() => serachHandler()} />
         </Box>
       </article>
       {/* 결과 테이블 */}

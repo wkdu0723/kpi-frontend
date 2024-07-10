@@ -18,6 +18,7 @@ export const getUserAllIssues = async (accountId: string) => {
  * 검색 조건에 맞는 데이터를 가지고옵니다.
  * @param filter: 검색 필터값
  * @param keyword: 검색 키워드
+ * @param rowsPerPage 페이지
  * */
 export const getSearchData = async (filter: string, keyword: string, rowsPerPage: number) => {
     try {
@@ -33,6 +34,25 @@ export const getSearchData = async (filter: string, keyword: string, rowsPerPage
     }
 }
 
+/**
+ * 유저기준으로 프로젝트를 검색합니다.
+ * @param filter 검색 필터값
+ * @param keyword 검색 키워드
+ * @param rowsPerPage 페이지
+ */
+export const getSearchUserProjectData = async (filter: string, keyword: string, rowsPerPage: number) => {
+    try {
+        const resp = await fetch(`http://localhost:3000/api/issues/user?filter=${filter}&keyword=${keyword}&rowsPerPage=${rowsPerPage}`);
+        if (!resp.ok) throw resp;
+
+        const data = await resp.json() as MergeJiraData;
+
+        return data;
+    } catch (err) {
+        console.error("getSearchData error:", err);
+        return { parents: [], children: [] };
+    }
+}
 // /**
 //  * 해당 지라 프로젝트의 작업내역을 가지고옵니다. (담당자id, 담당자이름, 시간)
 //  * @param issueId: 프로젝트id값
