@@ -28,7 +28,7 @@ export const getSearchData = async (filter: string, keyword: string, rowsPerPage
 
         return data;
     } catch (err) {
-        console.error("getUserAllIssues error:", err);
+        console.error("getSearchData error:", err);
         return { parents: [], children: [] };
     }
 }

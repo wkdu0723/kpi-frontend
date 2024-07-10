@@ -83,7 +83,8 @@ const columns: readonly Column[] = [
 
 /** 필터 종류입니다. */
 const selectFilter: readonly { name: string; id: string }[] = [
-  { name: "이슈 명", id: "assignee_display_name" },
+  { name: "이슈 명", id: "summary" },
+  { name: "담당자 이름", id: "assignee_display_name" },
   { name: "프로젝트 명", id: "project_name" },
   { name: "진행 상태", id: "status_name" },
 ];
@@ -156,9 +157,9 @@ export const User = (): JSX.Element => {
     return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
-  useLayoutEffect(() => {
-    serachHandler();
-  }, []);
+  // useLayoutEffect(() => {
+  //   serachHandler();
+  // }, []);
 
   /** 부모 리스트 및 자식 리스트를 그려줍니다. */
   const renderTableItem = (item: JiraMainData, isRenderArrow: boolean) => {

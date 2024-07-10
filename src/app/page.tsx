@@ -4,6 +4,7 @@ import { getSearchData } from "@/api/jira";
 import { JiraMainData, MergeJiraData } from "@/defines/jira";
 import { useLayoutEffect, useState } from "react";
 import {
+  Alert,
   Box,
   Collapse,
   FormControl,
@@ -24,6 +25,7 @@ import {
 import style from "./style.module.scss";
 import React from "react";
 import { JiraUrl } from "@/libs/Consts";
+import { useAlert } from "@/components/alert/alertContext";
 
 interface Column {
   id: string;
@@ -45,7 +47,8 @@ const columns: readonly Column[] = [
 
 /** 필터 종류입니다. */
 const selectFilter: readonly { name: string; id: string }[] = [
-  { name: "이슈 명", id: "assignee_display_name" },
+  { name: "이슈 명", id: "summary" },
+  { name: "담당자 이름", id: "assignee_display_name" },
   { name: "프로젝트 명", id: "project_name" },
   { name: "진행 상태", id: "status_name" },
 ];
@@ -57,8 +60,17 @@ export const Home = (): JSX.Element => {
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [project, setProjectId] = useState<string>("");
+  const { addAlert } = useAlert();
 
-  const serachHandler = async () => {
+  /**
+   * 프로젝트를 검색합니다
+   * isFetch는 최초 세팅에서만 사용됩니다.
+   * */
+  const serachHandler = async (isFetch: boolean = false) => {
+    if (!filter && !isFetch) {
+      return addAlert("error", "filter를 선택해주세요");
+    }
+
     const resp = await getSearchData(filter, keyword, rowsPerPage);
     console.log("??? resp:", resp);
     if (!resp) return;
@@ -89,7 +101,7 @@ export const Home = (): JSX.Element => {
   };
 
   useLayoutEffect(() => {
-    serachHandler();
+    serachHandler(true);
   }, []);
 
   /** 부모 리스트 및 자식 리스트를 그려줍니다. */
@@ -169,8 +181,11 @@ export const Home = (): JSX.Element => {
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setKeyword(event.target.value);
             }}
+            onKeyUp={(event) => {
+              if (event.code === "Enter" || event.key === "Enter") serachHandler();
+            }}
           />
-          <img src="/images/icon-search.png" onClick={serachHandler} />
+          <img src="/images/icon-search.png" onClick={() => serachHandler()} />
         </Box>
       </article>
       {/* 결과 테이블 */}
