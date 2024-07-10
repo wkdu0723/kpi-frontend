@@ -88,7 +88,7 @@ const selectFilter: readonly { name: string; id: string }[] = [
   { name: "진행 상태", id: "status_name" },
 ];
 
-export const Dashboard = (): JSX.Element => {
+export const User = (): JSX.Element => {
   const [issues, setIssues] = useState<MergeJiraData>({ parents: [], children: [] });
   const [filter, setFilter] = useState<string>("");
   const [keyword, setKeyword] = useState<string>("");
@@ -201,8 +201,8 @@ export const Dashboard = (): JSX.Element => {
   }
 
   return (
-    <section className={style.Dashboard}>
-      <article className={style.DashboardHeader}>
+    <section className={style.User}>
+      <article className={style.UserHeader}>
         {/* 필터 */}
         <Box>
           <FormControl sx={{ m: 1, minWidth: 200 }}>
@@ -307,19 +307,4 @@ export const Dashboard = (): JSX.Element => {
   );
 };
 
-
-// {
-//   id: 1000,
-//   project_name: "test1",
-//   parent_id: null,
-// },
-// {
-//   id: 1001,
-//   project_name: "test2",
-//   parent_id: null,
-// },
-// {
-//   id: 1002,
-//   project_name: "test3",
-//   parent_id: 1000,
-// }
+export default User;
