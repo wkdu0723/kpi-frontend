@@ -5,8 +5,10 @@ import { JiraMainData, MergeJiraData } from "@/defines/jira";
 import { useLayoutEffect, useState } from "react";
 import {
   Box,
+  Checkbox,
   Collapse,
   FormControl,
+  FormControlLabel,
   IconButton,
   InputLabel,
   MenuItem,
@@ -84,9 +86,16 @@ const columns: readonly Column[] = [
 /** 필터 종류입니다. */
 const selectFilter: readonly { name: string; id: string }[] = [
   { name: "이슈 명", id: "summary" },
-  { name: "담당자 이름", id: "assignee_display_name" },
   { name: "프로젝트 명", id: "project_name" },
   { name: "진행 상태", id: "status_name" },
+];
+
+/** 테스트용 체크박스리스트입니다. */
+const testCheckbox: readonly { label: string; value: string }[] = [
+  { label: "최영완", value: "1" },
+  { label: "사영민", value: "2" },
+  { label: "김준호", value: "3" },
+  { label: "이종운", value: "4" },
 ];
 
 export const User = (): JSX.Element => {
@@ -95,6 +104,7 @@ export const User = (): JSX.Element => {
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+  const [checkbox, setCheckBox] = useState<string>("");
   const { addAlert } = useAlert();
 
   /**
@@ -150,6 +160,13 @@ export const User = (): JSX.Element => {
     setPage(0);
   };
 
+  const handleChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("???? event1:", event);
+    console.log("???? event2:", event.target.checked);
+    // setChecked([event.target.checked, event.target.checked]);
+  };
+
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
 
@@ -165,6 +182,19 @@ export const User = (): JSX.Element => {
 
   return (
     <section className={style.User}>
+      <div className={style.Title}>
+        <h4>개별 사용자의 일감과 소요시간을 가지고 옵니다.</h4>
+        <p>* 검색하고자 하는 사용자를 체크해주세요.</p>
+      </div>
+      <article className={style.UserCheckBox}>
+        {testCheckbox.map((item, idx) => {
+          return <FormControlLabel
+            key={`user-checkbox-${item.value}-${idx}`}
+            label={item.label}
+            control={<Checkbox value={item.value} checked={checkbox === item.value} onChange={() => setCheckBox(item.value)} />}
+          />
+        })}
+      </article>
       <article className={style.UserHeader}>
         {/* 필터 */}
         <Box>

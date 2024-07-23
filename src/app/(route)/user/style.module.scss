@@ -3,6 +3,16 @@
     align-items: center;
     flex-direction: column;
     padding: 16px;
+    .Title {
+        > h4 {
+            margin: 0;
+        }
+        > p {
+            margin: 6px 0 0 0;
+            color: red;
+        }
+    }
+
     .UserHeader {
         display: flex;
         width: 100%;
@@ -27,6 +37,12 @@
                 cursor: pointer;
             }
         }
+    }
+
+    .UserCheckBox {
+        width: 100%;
+        padding: 0 0 0 20px;
+        font-weight: 400;
     }
 
     th {
