@@ -68,6 +68,7 @@ export const Home = (): JSX.Element => {
    * */
   const serachHandler = async (isFetch: boolean = false) => {
     if (!filter && !isFetch) {
+      console.log("????");
       return addAlert("error", "Filter를 선택해주세요");
     }
 
@@ -111,7 +112,7 @@ export const Home = (): JSX.Element => {
       hover
       role="checkbox"
       tabIndex={-1}
-      key={`${item.id}-${item.project_key}`}
+      key={`home-${item.id}-${item.project_key}`}
     >
       <TableCell>
         {isRenderArrow && <IconButton
@@ -182,7 +183,7 @@ export const Home = (): JSX.Element => {
               setKeyword(event.target.value);
             }}
             onKeyUp={(event) => {
-              if (event.code === "Enter" || event.key === "Enter") serachHandler();
+              if (event.key === "Enter") serachHandler();
             }}
           />
           <img src="/images/icon-search.png" onClick={() => serachHandler()} />

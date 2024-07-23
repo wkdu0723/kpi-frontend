@@ -35,45 +35,44 @@ interface Column {
   format?: (value: number) => string;
 }
 
-// interface ChartData {
-//   x: string; // 유저 이름
-//   y: [number, number]; // 프로젝트 진행 기간
-// }
+interface ChartData {
+  x: string; // 유저 이름
+  y: [number, number]; // 프로젝트 진행 기간
+}
 
 /**
  * 하루 근무시간 (8시간)
  * (지라에서 1d를 입력하면 8h로 기록됨)
  */
-// const workDay = 28800;
+const workDay = 28800;
 /** 밀리초 단위로 변환 */
-// const millisecondsPerDay = 24 * 60 * 60 * 1000;
+const millisecondsPerDay = 24 * 60 * 60 * 1000;
 
 /** 프로젝트 일정 차트옵션입니다. */
-// const options: ApexOptions = {
-//   chart: {
-//     type: "rangeBar",
-//   },
-//   plotOptions: {
-//     bar: {
-//       horizontal: true,
-//     },
-//   },
-//   dataLabels: { // 작업 기간을 보여주기 위한 옵션
-//     enabled: true,
-//     formatter: function (time: [number, number]) { // time값은 언제나 배열[0],[1]이 존재
-//       const timeDifference = time[1] - time[0];
-//       const daysDifference = (timeDifference / millisecondsPerDay).toFixed(1);
-//       return `${daysDifference} days`;
-//     }
-//   },
-//   xaxis: {
-//     type: "datetime",
-//   },
-// };
+const options: ApexOptions = {
+  chart: {
+    type: "rangeBar",
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+    },
+  },
+  dataLabels: { // 작업 기간을 보여주기 위한 옵션
+    enabled: true,
+    formatter: function (time: [number, number]) { // time값은 언제나 배열[0],[1]이 존재
+      const timeDifference = time[1] - time[0];
+      const daysDifference = (timeDifference / millisecondsPerDay).toFixed(1);
+      return `${daysDifference} days`;
+    }
+  },
+  xaxis: {
+    type: "datetime",
+  },
+};
 
 /** 테이블 컬럼 */
 const columns: readonly Column[] = [
-  { id: "arrow", label: "", minWidth: 20 },
   { id: "project", label: "프로젝트", minWidth: 170 },
   { id: "issue", label: "이슈", minWidth: 100 },
   { id: "account_name", label: "담당자 이름", minWidth: 100 },
@@ -91,22 +90,19 @@ const selectFilter: readonly { name: string; id: string }[] = [
 ];
 
 export const User = (): JSX.Element => {
-  const [issues, setIssues] = useState<MergeJiraData>({ parents: [], children: [] });
+  const [issues, setIssues] = useState<JiraMainData[]>([]);
   const [filter, setFilter] = useState<string>("");
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [project, setProjectId] = useState<string>("");
   const { addAlert } = useAlert();
 
   /**
    * 프로젝트를 검색합니다
    * isFetch는 최초 세팅에서만 사용됩니다.
    * */
-  const serachHandler = async (isFetch: boolean = false) => {
-    if (!filter && !isFetch) {
-      return addAlert("error", "Filter를 선택해주세요");
-    }
+  const serachHandler = async () => {
+    if (!filter) return addAlert("error", "Filter를 선택해주세요");
 
     const resp = await getSearchUserProjectData(filter, keyword, rowsPerPage);
     console.log("??? resp:", resp);
@@ -167,50 +163,6 @@ export const User = (): JSX.Element => {
     return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}:${seconds}`;
   };
 
-  // useLayoutEffect(() => {
-  //   serachHandler();
-  // }, []);
-
-  /** 부모 리스트 및 자식 리스트를 그려줍니다. */
-  const renderTableItem = (item: JiraMainData, isRenderArrow: boolean) => {
-    return <TableRow
-      className={isRenderArrow ? style.childrenTable : ""}
-      hover
-      role="checkbox"
-      tabIndex={-1}
-      key={`${item.id}-${item.project_key}`}
-    >
-      <TableCell>
-        {isRenderArrow && <IconButton
-          aria-label="expand row"
-          size="small"
-          onClick={() => {
-            setProjectId(project === item.id ? "" : item.id);
-          }}
-        >
-          <img
-            className={style.CollapseImage}
-            src={`/images/arrow-down.png`}
-            alt="down icon"
-            data-select={project === item.id}
-          />
-        </IconButton>}
-      </TableCell>
-      <TableCell>
-        {item.project_name}
-      </TableCell>
-      <TableCell>
-        <a href={`${JiraUrl}/jira/${item.project_type}/projects/${item.project_key}/issues/${item.issue_key}`} target="_blank">
-          {item.summary}
-        </a>
-      </TableCell>
-      <TableCell>{item.assignee_display_name}</TableCell>
-      <TableCell>{formatDate(item.created)}</TableCell>
-      <TableCell>{item.start_date ? formatDate(item.start_date) : " - "}</TableCell>
-      <TableCell>{item.status_name}</TableCell>
-    </TableRow>;
-  }
-
   return (
     <section className={style.User}>
       <article className={style.UserHeader}>
@@ -249,7 +201,7 @@ export const User = (): JSX.Element => {
               setKeyword(event.target.value);
             }}
             onKeyUp={(event) => {
-              if (event.code === "Enter" || event.key === "Enter") serachHandler();
+              if (event.key === "Enter") serachHandler();
             }}
           />
           <img src="/images/icon-search.png" onClick={() => serachHandler()} />
@@ -269,38 +221,28 @@ export const User = (): JSX.Element => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {issues.parents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => {
-                const children = issues.children.filter((findChildren) => findChildren.parent_id === item.id);
-                const isChildren = children.length > 0; // 하위 일감 존재 여부
-
+              {issues.map((item) => {
                 return (
-                  <React.Fragment key={`${item.id}-${item.project_key}`}>
-                    {/* 메인 일감 */}
-                    {renderTableItem(item, isChildren)}
-                    {/* 하위 일감 */}
-                    {isChildren && <TableRow className={style.ChildrenTableRow}>
-                      <TableCell style={{ padding: 0 }} colSpan={7}>
-                        <Collapse in={project === item.id} timeout="auto">
-                          <Box>
-                            <Table>
-                              <TableHead className={style.ChildrenTableHead}>
-                                <TableRow>
-                                  {columns.map((column) => (
-                                    <TableCell key={column.id} align={"left"} style={{ minWidth: column.minWidth }}>
-                                    </TableCell>
-                                  ))}
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {children.map((childrenItem) => {
-                                  return renderTableItem(childrenItem, false);
-                                })}
-                              </TableBody>
-                            </Table>
-                          </Box>
-                        </Collapse>
+                  <React.Fragment key={`user-${item.id}-${item.project_key}`}>
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={`${item.id}-${item.project_key}`}
+                    >
+                      <TableCell>
+                        {item.project_name}
                       </TableCell>
-                    </TableRow>}
+                      <TableCell>
+                        <a href={`${JiraUrl}/jira/${item.project_type}/projects/${item.project_key}/issues/${item.issue_key}`} target="_blank">
+                          {item.summary}
+                        </a>
+                      </TableCell>
+                      <TableCell>{item.assignee_display_name}</TableCell>
+                      <TableCell>{formatDate(item.created)}</TableCell>
+                      <TableCell>{item.start_date ? formatDate(item.start_date) : " - "}</TableCell>
+                      <TableCell>{item.status_name}</TableCell>
+                    </TableRow>
                   </React.Fragment>
                 );
               })}
@@ -310,7 +252,7 @@ export const User = (): JSX.Element => {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={issues.parents.length}
+          count={issues.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

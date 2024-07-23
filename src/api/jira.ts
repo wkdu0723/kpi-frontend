@@ -45,12 +45,12 @@ export const getSearchUserProjectData = async (filter: string, keyword: string, 
         const resp = await fetch(`http://localhost:3000/api/issues/user?filter=${filter}&keyword=${keyword}&rowsPerPage=${rowsPerPage}`);
         if (!resp.ok) throw resp;
 
-        const data = await resp.json() as MergeJiraData;
+        const data = await resp.json() as JiraMainData[];
 
         return data;
     } catch (err) {
         console.error("getSearchData error:", err);
-        return { parents: [], children: [] };
+        return [];
     }
 }
 // /**
