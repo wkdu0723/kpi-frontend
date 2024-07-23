@@ -29,7 +29,6 @@ export interface JiraMainData {
 }
 
 /** 메인 프로젝트 리스트 검색 시 사용하는 데이터입니다. */
-export interface MergeJiraData {
-  parents: JiraMainData[];
-  children: JiraMainData[];
+export interface MergeJiraData extends JiraMainData {
+  childs?: JiraMainData[];
 }

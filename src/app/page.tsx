@@ -54,7 +54,7 @@ const selectFilter: readonly { name: string; id: string }[] = [
 ];
 
 export const Home = (): JSX.Element => {
-  const [issues, setIssues] = useState<MergeJiraData>({ parents: [], children: [] });
+  const [issues, setIssues] = useState<MergeJiraData[]>([]);
   const [filter, setFilter] = useState<string>("");
   const [keyword, setKeyword] = useState<string>("");
   const [page, setPage] = useState<number>(0);
@@ -62,21 +62,22 @@ export const Home = (): JSX.Element => {
   const [project, setProjectId] = useState<string>("");
   const { addAlert } = useAlert();
 
-  /**
-   * 프로젝트를 검색합니다
-   * isFetch는 최초 세팅에서만 사용됩니다.
-   * */
-  const serachHandler = async (isFetch: boolean = false) => {
-    if (!filter && !isFetch) {
-      console.log("????");
-      return addAlert("error", "Filter를 선택해주세요");
-    }
-
+  const fetchData = async () => {
     const resp = await getSearchData(filter, keyword, rowsPerPage);
     console.log("??? resp:", resp);
     if (!resp) return;
 
     setIssues(resp);
+  }
+
+  /**
+   * 프로젝트를 검색합니다
+   * isFetch는 최초 세팅에서만 사용됩니다.
+   * */
+  const serachHandler = async () => {
+    if (!filter) return addAlert("error", "Filter를 선택해주세요");
+
+    fetchData();
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -102,7 +103,7 @@ export const Home = (): JSX.Element => {
   };
 
   useLayoutEffect(() => {
-    serachHandler(true);
+    fetchData();
   }, []);
 
   /** 부모 리스트 및 자식 리스트를 그려줍니다. */
@@ -203,16 +204,13 @@ export const Home = (): JSX.Element => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {issues.parents.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((item) => {
-                const children = issues.children.filter((findChildren) => findChildren.parent_id === item.id);
-                const isChildren = children.length > 0; // 하위 일감 존재 여부
-
+              {issues.map((item) => {
                 return (
                   <React.Fragment key={`${item.id}-${item.project_key}`}>
                     {/* 메인 일감 */}
-                    {renderTableItem(item, isChildren)}
+                    {renderTableItem(item, !!item.childs)}
                     {/* 하위 일감 */}
-                    {isChildren && <TableRow className={style.ChildrenTableRow}>
+                    {item.childs && <TableRow className={style.ChildrenTableRow}>
                       <TableCell style={{ padding: 0 }} colSpan={7}>
                         <Collapse in={project === item.id} timeout="auto">
                           <Box>
@@ -226,8 +224,8 @@ export const Home = (): JSX.Element => {
                                 </TableRow>
                               </TableHead>
                               <TableBody>
-                                {children.map((childrenItem) => {
-                                  return renderTableItem(childrenItem, false);
+                                {item.childs.map((childItem) => {
+                                  return renderTableItem(childItem, false);
                                 })}
                               </TableBody>
                             </Table>
@@ -244,7 +242,7 @@ export const Home = (): JSX.Element => {
         <TablePagination
           rowsPerPageOptions={[10, 25, 100]}
           component="div"
-          count={issues.parents.length}
+          count={issues.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

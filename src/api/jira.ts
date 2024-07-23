@@ -22,15 +22,15 @@ export const getUserAllIssues = async (accountId: string) => {
  * */
 export const getSearchData = async (filter: string, keyword: string, rowsPerPage: number) => {
     try {
-        const resp = await fetch(`http://localhost:3000/api/issues/search?filter=${filter}&keyword=${keyword}&rowsPerPage=${rowsPerPage}`);
+        const resp = await fetch(`http://localhost:3000/api/issues/search/mapng?filter=${filter}&keyword=${keyword}&rowsPerPage=${rowsPerPage}`);
         if (!resp.ok) throw resp;
 
-        const data = await resp.json() as MergeJiraData;
+        const data = await resp.json() as MergeJiraData[];
 
         return data;
     } catch (err) {
         console.error("getSearchData error:", err);
-        return { parents: [], children: [] };
+        return [];
     }
 }
 
