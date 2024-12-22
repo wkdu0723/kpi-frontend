@@ -93,9 +93,6 @@ const selectFilter: readonly { name: string; id: string }[] = [
 /** 테스트용 체크박스리스트입니다. */
 const testCheckbox: readonly { label: string; value: string }[] = [
   { label: "최영완", value: "1" },
-  { label: "사영민", value: "2" },
-  { label: "김준호", value: "3" },
-  { label: "이종운", value: "4" },
 ];
 
 export const User = (): JSX.Element => {
@@ -115,7 +112,6 @@ export const User = (): JSX.Element => {
     if (!filter) return addAlert("error", "Filter를 선택해주세요");
 
     const resp = await getSearchUserProjectData(filter, keyword, rowsPerPage);
-    console.log("??? resp:", resp);
     if (!resp) return;
 
     setIssues(resp);
@@ -159,13 +155,6 @@ export const User = (): JSX.Element => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const handleChange1 = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("???? event1:", event);
-    console.log("???? event2:", event.target.checked);
-    // setChecked([event.target.checked, event.target.checked]);
-  };
-
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);

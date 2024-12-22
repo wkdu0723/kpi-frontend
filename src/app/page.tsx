@@ -1,6 +1,6 @@
 "use client";
 
-import { getSearchData } from "@/api/jira";
+import { getAllIssues, getSearchData } from "@/api/jira";
 import { JiraMainData, MergeJiraData } from "@/defines/jira";
 import { useLayoutEffect, useState } from "react";
 import {
@@ -63,10 +63,9 @@ export const Home = (): JSX.Element => {
   const { addAlert } = useAlert();
 
   const fetchData = async () => {
-    const resp = await getSearchData(filter, keyword, rowsPerPage);
+    const resp = await getAllIssues();
     console.log("??? resp:", resp);
     if (!resp) return;
-
     setIssues(resp);
   }
 
