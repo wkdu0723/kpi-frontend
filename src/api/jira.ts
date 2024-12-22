@@ -7,7 +7,6 @@ export const getAllIssues = async () => {
     if (!resp.ok) throw resp;
 
     const data = (await resp.json()) as JiraMainData[];
-    console.log("??? data;", data);
     return data;
   } catch (err) {
     console.error("getUserAllIssues error:", err);

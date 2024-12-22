@@ -64,7 +64,6 @@ export const Home = (): JSX.Element => {
 
   const fetchData = async () => {
     const resp = await getAllIssues();
-    console.log("??? resp:", resp);
     if (!resp) return;
     setIssues(resp);
   }
