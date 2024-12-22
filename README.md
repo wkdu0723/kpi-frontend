@@ -1,5 +1,5 @@
-## toonation-kpi-frontend
-투네이션 프로트팀에서 사용하는 jira kpi 프론트 소스입니다.
+## kpi-frontend-project
+지라 데이터를 활용하여 kpi를 만들기위한 테스트용 프론트 소스입니다.
 
 * node 20이상 버전 사용 해야함.
 
